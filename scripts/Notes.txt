@@ -1,0 +1,35 @@
+CONFIG
+CONST
+canvas
+cookieStore
+document
+foundry
+game
+
+
+
+
+
+
+
+
+
+
+
+
+// ---- Actor
+// rollSkill
+// rollAbilitySave
+// rollAbilityTest
+// rollDeathSave
+// roll
+// items: weapons
+// items: spells
+
+
+
+
+
+Fudges are maintained as:
+- For PC actors, as flags within the actor
+- For GM, as Setting - scope world

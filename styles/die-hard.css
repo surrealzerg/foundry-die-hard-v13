@@ -1,0 +1,197 @@
+/*
+Inspiration/plagarism from https://gitlab.com/asacolips-projects/foundry-mods/foundry-vtt-dice-calculator/-/blob/master/css/dice-calculator.css
+ */
+
+#chat-controls .die-hard-fudge-icon {
+  flex: 0 0 0;
+  padding-left: 5px;
+}
+#chat-controls .die-hard-pause-fudge-overlay {
+  z-index: 99999999;
+  position: absolute;
+}
+#chat-controls .die-hard-icon-hidden {
+  display: none;
+}
+.die-hard-blind-whisper {
+  display: none;
+}
+.die-hard-fudge-icon, .die-hard-karma-icon {
+    color: gray;
+}
+#chat-controls #die-hard-pause-fudge-icon {
+  flex: 0 0 0;
+  padding-left: 0px;
+  color: white;
+  /*color: red;
+  */
+
+}
+.die-hard-status-button {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+#chat-controls .die-hard-icon-active {
+  color: white;
+  /*
+  animation-name: fudge-icon-color;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+
+   */
+}
+#chat-controls .die-hard-karma-icon {
+  flex: 0 0 0;
+  padding-left: 5px;
+}
+
+#chat-controls .die-hard-karma-icon-active {
+  color: white;
+}
+
+.die-hard-column {
+  width: 490px;
+  float: left;
+}
+
+input.die-hard-colum-input-button {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.1);
+  border: 2px groove var(--color-border-light-highlight);
+  width: 100%;
+  margin: 0 1px;
+  border-radius: 3px;
+  font-size: var(--font-size-14);
+  line-height: 28px;
+  font-family: var(--font-primary);
+}
+.die-hard-colum-input-button:hover {
+  outline: none;
+  box-shadow: 0 0 5px var(--color-shadow-primary);
+}
+
+input.die-hard-checkbox {
+  display:none !important;
+}
+input.die-hard-checkbox + label {
+  padding: 5px 5px;
+  margin: 5px 5px 5px 5px;
+  background-color: #e7e7e7;
+  /* border-color: #ddd; */
+  border: 1px solid #3d3d3d;
+  transition: background-color 0.3s ease-in-out;
+  border-radius: 3px;
+  cursor: pointer !important
+}
+input.die-hard-checkbox:checked + label {
+   background: rgba(0, 0, 0, 0.5);
+   color: var(--color-text-light-highlight);
+   cursor: pointer !important
+}
+
+input.die-hard-radio {
+  display:none !important;
+}
+input.die-hard-radio + label {
+  padding: 5px 5px;
+  margin: 5px 5px 5px 5px;
+  background-color: #e7e7e7;
+  /* border-color: #ddd; */
+  border: 1px solid #3d3d3d;
+  transition: background-color 0.3s ease-in-out;
+  border-radius: 3px;
+  cursor: pointer !important
+}
+input.die-hard-radio:checked + label {
+   background: rgba(0, 0, 0, 0.5);
+   color: var(--color-text-light-highlight);
+   cursor: pointer !important
+}
+
+div.die-hard-form-group {
+  clear: both;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 3px 0;
+  align-items: center;
+}
+
+
+.die-hard-colum-input-formula {
+}
+.die-hard-colum-input-times {
+  max-width: 40px;
+}
+
+
+.endless-fudge {
+  cursor: pointer;
+  text-align:center;
+}
+.endless-fudge-enabled {
+  cursor: pointer;
+  text-align:center;
+  background-color: #77DD77;
+  -webkit-text-stroke: 1px #77DD77;
+  /*
+  animation-name: die-hard-form-endless-fudge-enabled;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+
+   */
+}
+.delete-fudge {
+  cursor: pointer;
+  text-align:center;
+}
+.toggle-fudge {
+  cursor: pointer;
+  text-align:center;
+}
+/*
+@keyframes fudge-icon-color {
+  0% {
+    color: #FFFFFF;
+  }
+  50% {
+    color: #FFA500;
+  }
+  100 {
+    color: #FFFFFF;
+  }
+}
+*/
+.die-hard-form-error {
+  animation-name: die-hard-form-error-color;
+  animation-duration: 1s;
+  animation-iteration-count: 3;
+}
+
+@keyframes die-hard-form-error-color {
+  0% {
+    background-color: initial;
+  }
+  50% {
+    background-color: #ff6961;
+  }
+  100% {
+    background-color: initial;
+  }
+}
+
+@keyframes die-hard-form-endless-fudge-enabled {
+  0% {
+    background-color: initial;
+    -webkit-text-stroke: 1px #77DD77;
+  }
+  50% {
+    background-color: #77DD77;
+    -webkit-text-stroke: 1px #77DD77;
+  }
+  100% {
+    background-color: initial;
+  -webkit-text-stroke: 1px #77DD77;
+  }
+}
+
