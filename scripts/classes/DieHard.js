@@ -12,55 +12,123 @@ export default class DieHard {
     dieHardLog(false, 'DieHard - constructor');
   }
 
-    static injectDieHardChatButtons(html) {
+  static injectDieHardChatButtons(html) {
     const root = html?.[0] ?? html ?? document;
 
-    // Prefer chat controls containers (v13-friendly), with fallbacks
-    const controls =
-      root.querySelector?.(".chat-controls") ||
-      root.querySelector?.("#chat-controls") ||
-      root.querySelector?.(".chat-control-icons") ||
-      root.querySelector?.("form#chat-form") ||
-      root.querySelector?.(".chat-form");
-
-    if (!controls) {
-      console.warn("[Die Hard] Could not find chat controls container to inject buttons.");
-      return;
-    }
-
-    // Prevent duplicates on re-render
-    if (controls.querySelector(".die-hard-fudge-icon") || controls.querySelector(".die-hard-karma-icon")) return;
-
-    // --- your existing button creation, unchanged ---
-    let fudgeButton = document.createElement('label');
-    fudgeButton.classList.add('die-hard-fudge-icon');
+    // Build our buttons once
+    const fudgeButton = document.createElement("label");
+    fudgeButton.classList.add("die-hard-fudge-icon");
     fudgeButton.innerHTML =
       '<span title="Fudge Paused"><i id="die-hard-pause-fudge-icon" class="fas fa-pause-circle die-hard-icon-hidden"></i></span>' +
       '<span title="Fudge"><i id="die-hard-fudge-icon" class="fas fa-poop"></i></span>';
 
-    fudgeButton.addEventListener('click', async (ev) => {
-      new DieHardFudgeDialog().render(true);
-    });
-    fudgeButton.addEventListener('contextmenu', async (ev) => {
-      game.dieHardSystem.disableAllFudges();
-    });
+    fudgeButton.addEventListener("click", () => new DieHardFudgeDialog().render(true));
+    fudgeButton.addEventListener("contextmenu", () => game.dieHardSystem.disableAllFudges());
 
-    let karmaButton = document.createElement('label');
-    karmaButton.classList.add('die-hard-karma-icon');
+    const karmaButton = document.createElement("label");
+    karmaButton.classList.add("die-hard-karma-icon");
     karmaButton.innerHTML =
       '<span title="Karma"><i id="die-hard-karma-icon" class="fas fa-praying-hands"></i></span>';
 
-    karmaButton.addEventListener('click', async (ev) => {
-      new DieHardKarmaDialog().render(true);
-    });
+    karmaButton.addEventListener("click", () => new DieHardKarmaDialog().render(true));
 
-    // Insert in a deterministic place: append to controls row
-    // (This is more reliable than "after .chat-control-icon" in v13)
-    controls.appendChild(fudgeButton);
-    controls.appendChild(karmaButton);
+    const wrap = document.createElement("span");
+    wrap.dataset.dieHardButtons = "1";
+    wrap.style.display = "inline-flex";
+    wrap.style.alignItems = "center";
+    wrap.style.gap = "6px";
+    wrap.style.marginLeft = "6px";
+    wrap.appendChild(fudgeButton);
+    wrap.appendChild(karmaButton);
 
-    console.log("[Die Hard] Injected chat buttons.");
+    // Helper: find roll-mode buttons inside a container
+    const findRollBtns = (container) => {
+      if (!container?.querySelectorAll) return [];
+
+      // Primary: exact icon classes (globe/user-secret/eye-slash/user) scoped to this container
+      const btns = [...container.querySelectorAll("button.ui-control.icon, button.ui-control.plain.icon")];
+
+      // We avoid matching sidebar "Actors" tab by requiring roll-ish tooltip/labels for fa-user
+      const filtered = btns.filter(b =>
+        b.classList.contains("fa-globe") ||
+        b.classList.contains("fa-user-secret") ||
+        b.classList.contains("fa-eye-slash") ||
+        (b.classList.contains("fa-user") && (
+          ((b.getAttribute("aria-label") || "").toLowerCase().includes("roll")) ||
+          ((b.getAttribute("title") || "").toLowerCase().includes("roll")) ||
+          ((b.dataset?.tooltip || "").toLowerCase().includes("roll")) ||
+          Boolean(b.dataset?.rollMode) ||
+          (String(b.dataset?.action || "").toLowerCase().includes("roll"))
+        ))
+      );
+
+      // Backup: anything in this container that explicitly exposes roll mode
+      const explicit = [
+        ...container.querySelectorAll("[data-roll-mode]"),
+        ...container.querySelectorAll('[data-action*="roll" i]'),
+      ];
+
+      // Merge + de-dupe
+      const set = new Set();
+      const out = [];
+      for (const el of [...filtered, ...explicit]) {
+        if (!el) continue;
+        if (set.has(el)) continue;
+        set.add(el);
+        out.push(el);
+      }
+      return out;
+    };
+
+    // We must insert relative to the roll-mode buttons container, not just any chat-ish node.
+    // Try candidates in order, preferring global document because renderChatLog html might not include controls.
+    const candidates = [
+      document.querySelector("#chat-controls"),
+      document.querySelector(".chat-controls"),
+      root.querySelector?.("#chat-controls"),
+      root.querySelector?.(".chat-controls"),
+      document.querySelector("#chat-form"),
+      document.querySelector("form#chat-form"),
+      root.querySelector?.("#chat-form"),
+      root.querySelector?.("form#chat-form"),
+    ].filter(Boolean);
+
+    // Choose the first candidate that actually contains roll buttons
+    let controls = null;
+    let rollBtns = [];
+
+    for (const c of candidates) {
+      const found = findRollBtns(c);
+      if (found.length >= 3) { // should be 4, but >=3 is safer across layouts
+        controls = c;
+        rollBtns = found;
+        break;
+      }
+    }
+
+    if (!controls) {
+      console.warn("[Die Hard] Could not find a chat controls container that contains roll-mode buttons; falling back to #chat-controls/.chat-controls append.");
+      controls = document.querySelector("#chat-controls") || document.querySelector(".chat-controls") || candidates[0] || document.body;
+    }
+
+    // Prevent duplicates (check within whichever controls we chose)
+    if (controls.querySelector?.(".die-hard-fudge-icon") || controls.querySelector?.(".die-hard-karma-icon")) return;
+
+    if (rollBtns.length >= 3) {
+      const last = rollBtns[rollBtns.length - 1];
+      const lastLi = last.closest?.("li");
+
+      if (lastLi?.parentNode) lastLi.insertAdjacentElement("afterend", wrap);
+      else last.insertAdjacentElement("afterend", wrap);
+
+      console.log("[Die Hard] Injected chat buttons after roll-mode controls.");
+    } else {
+      console.warn("[Die Hard] Roll-mode buttons not found in selected controls; appending to controls.");
+      controls.appendChild(wrap);
+    }
   }
+
+
 
 
   static renderDieHardIcons() {
@@ -86,7 +154,7 @@ export default class DieHard {
       // the document object isn't existing sometimes yet, so just ignore.  It'll eventually render
       try {
         //insertAfter(pauseButton, document.querySelector('.chat-control-icon'));
-        insertAfter(fudgeButton, document.querySelector('.chat-control-icon'));
+        //insertAfter(fudgeButton, document.querySelector('.chat-control-icon'));
         //game.dieHardSystem.refreshActiveFudgesIcon()
       }
       catch (e) {  }
@@ -103,7 +171,7 @@ export default class DieHard {
       // ToDo: Fix this ugly hack
       // the document object isn't existing sometimes yet, so just ignore.  It'll eventually render
       try {
-        insertAfter(karmaButton, document.querySelector('.chat-control-icon'));
+        //insertAfter(karmaButton, document.querySelector('.chat-control-icon'));
       } catch (e) {
       }
     }

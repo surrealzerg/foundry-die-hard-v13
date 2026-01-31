@@ -54,18 +54,11 @@ export default class DieHardDnd5e extends DieHardSystem{
       }
     ]
   }
+  
 
-  // Hook handler: dnd5e.preRollAttackV2(item, rollConfig, options)
-  entityPreRollAttackV2(item, rollConfig = {}, options = {}) {
-    dieHardLog(false, "DieHardDnd5e.entityPreRollAttackV2", { item, rollConfig, options });
-
-    // Safety: item/actor may be missing in weird contexts
-    const actorId = item?.actor?.id;
-    if (!actorId) {
-      ui.notifications.warn("[Die Hard] preRollAttackV2 fired but item.actor was missing");
-      console.warn("[Die Hard] preRollAttackV2 missing actor", { item, rollConfig, options });
-      return;
-    }
+  // Hook handler: dnd5e.preRollAttackV2(itemLike, rollConfig, options)
+  entityPreRollAttackV2(itemLike, rollConfig = {}, options = {}) {
+    dieHardLog(false, "DieHardDnd5e.entityPreRollAttackV2", { itemLike, rollConfig, options });
 
     const cfg = DieHardSetting("dieHardSettings");
     if (cfg?.fudgeConfig?.globallyDisabled) {
@@ -73,8 +66,15 @@ export default class DieHardDnd5e extends DieHardSystem{
       return;
     }
 
-    // Keep your existing behavior
-    game.dieHardSystem.wrappedRoll(options, actorId, "entityRollAttack");
+    const actorId = options?.data?.speaker?.actor;
+    if (!actorId) {
+      ui.notifications.warn("[Die Hard] preRollAttackV2 fired but options.data.speaker.actor was missing. See console.");
+      console.warn("[Die Hard] preRollAttackV2 missing speaker.actor", { itemLike, rollConfig, options });
+      return;
+    }
+
+    // IMPORTANT: use the same id you list in your config/UI, so fudges match
+    game.dieHardSystem.wrappedRoll(options, actorId, "preRollAttackV2");
   }
 
   hookReady() {
