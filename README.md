@@ -1,4 +1,6 @@
-WIP updating for v13 compatibility. 
+Updated to Work for V13.
+
+Original development by https://github.com/UranusBytes/foundry-die-hard
 
 Die Hard
 ========
