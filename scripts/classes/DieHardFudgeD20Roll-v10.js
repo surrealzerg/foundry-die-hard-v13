@@ -20,6 +20,8 @@ export default class DieHardFudgeD20Roll extends dice.D20Roll {
 
  evaluate({minimize=false, maximize=false, async}={}) {
    dieHardLog(false, 'DieHardDnd5e - D20Roll: evaluate: ', async)
-    super.evaluate({minimize: minimize, maximize: maximize, async: async})
+    // IMPORTANT: return the parent evaluate() result (Roll or Promise<Roll>)
+    // so upstream callers can await/use it.
+    return super.evaluate({minimize: minimize, maximize: maximize, async: async})
  }
 }

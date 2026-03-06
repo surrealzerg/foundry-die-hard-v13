@@ -18,11 +18,6 @@ export default class DieHardDnd5e extends DieHardSystem{
     dieHardLog(false, 'DieHardDnd5e.constructor');
     super();
 
-    libWrapper.register('foundry-die-hard', 'CONFIG.Actor.documentClass.prototype.rollSavingThrow', this.actorRollAbilitySave, 'WRAPPER');
-    libWrapper.register('foundry-die-hard', 'CONFIG.Actor.documentClass.prototype.rollSkill', this.actorRollSkill, 'WRAPPER');
-    libWrapper.register('foundry-die-hard', 'CONFIG.Actor.documentClass.prototype.rollAbilityCheck', this.actorRollAbilityTest, 'WRAPPER');
-    libWrapper.register('foundry-die-hard', 'CONFIG.Actor.documentClass.prototype.rollDeathSave', this.actorRollDeathSave, 'WRAPPER');
-
     //libWrapper.register('foundry-die-hard', 'CONFIG.Item.documentClass.prototype.preRollAttackV2', this.entityRollAttack, 'WRAPPER');
 
     libWrapper.register('foundry-die-hard', 'game.dnd5e.dice.D20Roll.prototype._evaluate', this.d20rollEvaluate, 'WRAPPER');
@@ -167,10 +162,18 @@ export default class DieHardDnd5e extends DieHardSystem{
       dieHardLog(false, 'DieHardDnd5e.d20rollEvaluate - No fudging planned for this roll');
     }
 
-    let result = wrapped.call(evaluate_options)
-    // If a fudge re-roll is allowed
-    if (fudge){
-      result.then(function(value) {game.dieHardSystem.fudgeD20Roll(value, evaluate_options)})
+    // IMPORTANT: call the wrapped method with the correct `this` binding
+    // and pass through the evaluate options. If `this` is wrong, D20 roll
+    // evaluation can silently fail or return unusable results.
+    const result = wrapped.call(this, evaluate_options)
+
+    // If a fudge re-roll is allowed, only attach async handlers when appropriate.
+    if (fudge) {
+      if (result?.then) {
+        result.then(value => game.dieHardSystem.fudgeD20Roll(value, evaluate_options))
+      } else {
+        game.dieHardSystem.fudgeD20Roll(result, evaluate_options)
+      }
     }
 
     return result
@@ -207,36 +210,48 @@ export default class DieHardDnd5e extends DieHardSystem{
     }
   }
 
-  actorRollSkill(wrapped, skillId, options={}) {
+  /**
+   * DnD5e / Midi can call rollSkill with varying signatures across versions.
+   * We must not assume (skillId, options) only, otherwise we can drop args
+   * (e.g. advantage/disadvantage config) and cause unintended behavior.
+   */
+  actorRollSkill(wrapped, ...args) {
     dieHardLog(false, 'DieHardDnd5e.actorRollSkill', this);
-    if (!DieHardSetting('dieHardSettings').fudgeConfig.globallyDisabled) {
-      game.dieHardSystem.wrappedRoll(options, this.id, 'actorRollSkill')
+
+    // Best-effort: options is typically the 2nd argument; only mutate if it's an object.
+    const options = (args.length > 1 && args[1] && typeof args[1] === "object") ? args[1] : null;
+    if (options && !DieHardSetting('dieHardSettings').fudgeConfig.globallyDisabled) {
+      game.dieHardSystem.wrappedRoll(options, this.id, 'actorRollSkill');
     }
-    wrapped(skillId, options);
+
+    return wrapped(...args);
   }
 
-  actorRollAbilitySave(wrapped, abilityId, options={}) {
+  actorRollAbilitySave(wrapped, ...args) {
     dieHardLog(false, 'DieHardDnd5e.actorRollAbilitySave', this);
-    if (!DieHardSetting('dieHardSettings').fudgeConfig.globallyDisabled) {
-      game.dieHardSystem.wrappedRoll(options, this.id, 'actorRollAbilitySave')
+    const options = (args.length > 1 && args[1] && typeof args[1] === "object") ? args[1] : null;
+    if (options && !DieHardSetting('dieHardSettings').fudgeConfig.globallyDisabled) {
+      game.dieHardSystem.wrappedRoll(options, this.id, 'actorRollAbilitySave');
     }
-    wrapped(abilityId, options);
+    return wrapped(...args);
   }
 
-  actorRollAbilityTest(wrapped, abilityId, options={}) {
+  actorRollAbilityTest(wrapped, ...args) {
     dieHardLog(false, 'DieHardDnd5e.actorRollAbilityTest', this);
-    if (!DieHardSetting('dieHardSettings').fudgeConfig.globallyDisabled) {
-      game.dieHardSystem.wrappedRoll(options, this.id, 'actorRollAbilityTest')
+    const options = (args.length > 1 && args[1] && typeof args[1] === "object") ? args[1] : null;
+    if (options && !DieHardSetting('dieHardSettings').fudgeConfig.globallyDisabled) {
+      game.dieHardSystem.wrappedRoll(options, this.id, 'actorRollAbilityTest');
     }
-    wrapped(abilityId, options);
+    return wrapped(...args);
   }
 
-  actorRollDeathSave(wrapped, options={}) {
+  actorRollDeathSave(wrapped, ...args) {
     dieHardLog(false, 'DieHardDnd5e.actorRollDeathSave', this);
-    if (!DieHardSetting('dieHardSettings').fudgeConfig.globallyDisabled) {
-      game.dieHardSystem.wrappedRoll(options, this.id, 'actorRollDeathSave')
+    const options = (args.length > 0 && args[0] && typeof args[0] === "object") ? args[0] : null;
+    if (options && !DieHardSetting('dieHardSettings').fudgeConfig.globallyDisabled) {
+      game.dieHardSystem.wrappedRoll(options, this.id, 'actorRollDeathSave');
     }
-    wrapped(options);
+    return wrapped(...args);
   }
 
 }
