@@ -30,16 +30,20 @@ Hooks.once('ready', () => {
 
 Hooks.on('renderChatMessageHTML', DieHard.hideDieHardWhisper);
 
+/*
 Hooks.on('renderSidebarTab', (app, html, data) => {
   // Only display for GM
   if (!game.user.isGM) return;
   if (document.getElementById('die-hard-fudge-icon') == null) {
     // ToDo: Figure out how to debounce this
+    
+    //This was replaced by a call to injectDieHardChatButtons() in DieHard->registerHooks()
     DieHard.renderDieHardIcons()
     // foundry.utils.debounce(() => , 100)
     DieHard.refreshDieHardStatus()
   }
 });
+*/
 
 Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
   registerPackageDebugFlag('foundry-die-hard');

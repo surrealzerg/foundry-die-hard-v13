@@ -1,48 +1,77 @@
-/*
-Inspiration/plagarism from https://gitlab.com/asacolips-projects/foundry-mods/foundry-vtt-dice-calculator/-/blob/master/css/dice-calculator.css
- */
+/* Inspiration/plagarism from https://gitlab.com/asacolips-projects/foundry-mods/foundry-vtt-dice-calculator/-/blob/master/css/dice-calculator.css */
 
-#chat-controls .die-hard-fudge-icon {
-  flex: 0 0 0;
-  padding-left: 5px;
+/* start modifications by Surreal */
+
+/* Hide Die Hard buttons when chat controls collapse into vertical mode */
+#chat-controls #roll-privacy.vertical ~ [data-die-hard-buttons="1"] {
+  display: none !important;
 }
-#chat-controls .die-hard-pause-fudge-overlay {
-  z-index: 99999999;
+
+/* Wrapper for Die Hard chat buttons */
+#chat-controls [data-die-hard-buttons="1"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  margin-left: 0;
+  flex-shrink: 0;
+}
+
+/* Match Foundry control spacing */
+#chat-controls [data-die-hard-buttons="1"] .ui-control {
+  margin: 0;
+}
+
+/* Let the button, not the inner icon, receive clicks/right-clicks */
+#chat-controls [data-die-hard-buttons="1"] .ui-control i {
+  pointer-events: none;
+}
+
+/* Make the fudge button the positioning context */
+#chat-controls [data-die-hard-buttons="1"] button.die-hard-fudge-icon {
+  position: relative;
+}
+
+/* Stack both fudge icons in the exact same spot */
+#chat-controls [data-die-hard-buttons="1"] button.die-hard-fudge-icon #die-hard-fudge-icon,
+#chat-controls [data-die-hard-buttons="1"] button.die-hard-fudge-icon #die-hard-pause-fudge-icon {
   position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
 }
+
+/* Pause icon styling */
+#chat-controls [data-die-hard-buttons="1"] button.die-hard-fudge-icon #die-hard-pause-fudge-icon {
+  font-size: 0.72em;
+  color: white;
+}
+
+/* Hidden state */
 #chat-controls .die-hard-icon-hidden {
-  display: none;
+  display: none !important;
 }
+
+/* Base inactive color */
+#chat-controls .die-hard-fudge-icon,
+#chat-controls .die-hard-karma-icon {
+  color: gray;
+}
+
+/* Active state */
+#chat-controls .die-hard-icon-active {
+  color: white;
+}
+
+/* end modifications by Surreal */
+
+
 .die-hard-blind-whisper {
   display: none;
 }
-.die-hard-fudge-icon, .die-hard-karma-icon {
-    color: gray;
-}
-#chat-controls #die-hard-pause-fudge-icon {
-  flex: 0 0 0;
-  padding-left: 0px;
-  color: white;
-  /*color: red;
-  */
 
-}
 .die-hard-status-button {
   margin-right: 5px;
   margin-left: 5px;
-}
-#chat-controls .die-hard-icon-active {
-  color: white;
-  /*
-  animation-name: fudge-icon-color;
-  animation-duration: 2s;
-  animation-iteration-count: infinite;
-
-   */
-}
-#chat-controls .die-hard-karma-icon {
-  flex: 0 0 0;
-  padding-left: 5px;
 }
 
 #chat-controls .die-hard-karma-icon-active {
@@ -77,7 +106,6 @@ input.die-hard-checkbox + label {
   padding: 5px 5px;
   margin: 5px 5px 5px 5px;
   background-color: #e7e7e7;
-  /* border-color: #ddd; */
   border: 1px solid #3d3d3d;
   transition: background-color 0.3s ease-in-out;
   border-radius: 3px;
@@ -96,7 +124,6 @@ input.die-hard-radio + label {
   padding: 5px 5px;
   margin: 5px 5px 5px 5px;
   background-color: #e7e7e7;
-  /* border-color: #ddd; */
   border: 1px solid #3d3d3d;
   transition: background-color 0.3s ease-in-out;
   border-radius: 3px;
@@ -117,13 +144,9 @@ div.die-hard-form-group {
   align-items: center;
 }
 
-
-.die-hard-colum-input-formula {
-}
 .die-hard-colum-input-times {
   max-width: 40px;
 }
-
 
 .endless-fudge {
   cursor: pointer;
@@ -134,12 +157,6 @@ div.die-hard-form-group {
   text-align:center;
   background-color: #77DD77;
   -webkit-text-stroke: 1px #77DD77;
-  /*
-  animation-name: die-hard-form-endless-fudge-enabled;
-  animation-duration: 1s;
-  animation-iteration-count: infinite;
-
-   */
 }
 .delete-fudge {
   cursor: pointer;
@@ -149,19 +166,7 @@ div.die-hard-form-group {
   cursor: pointer;
   text-align:center;
 }
-/*
-@keyframes fudge-icon-color {
-  0% {
-    color: #FFFFFF;
-  }
-  50% {
-    color: #FFA500;
-  }
-  100 {
-    color: #FFFFFF;
-  }
-}
-*/
+
 .die-hard-form-error {
   animation-name: die-hard-form-error-color;
   animation-duration: 1s;
@@ -191,7 +196,6 @@ div.die-hard-form-group {
   }
   100% {
     background-color: initial;
-  -webkit-text-stroke: 1px #77DD77;
+    -webkit-text-stroke: 1px #77DD77;
   }
 }
-

@@ -2,8 +2,8 @@
     "id": "foundry-die-hard",
     "title": "Die Hard",
     "description": "Adjustments for DND5e & PF2e die rolls like fudging...",
-    "author": "Jeremy (UranusBytes) and Surreal",
-    "version": "0.2.2",
+    "author": "Surreal and Jeremy (UranusBytes)",
+    "version": "0.2.3",
     "esmodules": [
         "scripts/die-hard.js"
     ],
