@@ -1,3 +1,5 @@
+2026-03-06 - Fixed Monk's Token Bar compatibility
+
 Updated to Work for V13.
 
 Original development by https://github.com/UranusBytes/foundry-die-hard
